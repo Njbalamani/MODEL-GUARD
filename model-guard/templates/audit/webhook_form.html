@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{% if endpoint %}Edit{% else %}New{% endif %} webhook — ModelGuard{% endblock %}
+{% block nav_webhooks %}nav-active{% endblock %}
+{% block page_title %}{% if endpoint %}Edit{% else %}New{% endif %} webhook endpoint{% endblock %}
+{% block content %}
+<div class="panel" style="max-width:760px;">
+  <form method="post" class="form-grid">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn" type="submit">Save endpoint</button>
+  </form>
+</div>
+{% endblock %}

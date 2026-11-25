@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Deliveries — ModelGuard{% endblock %}
+{% block nav_webhooks %}nav-active{% endblock %}
+{% block page_title %}Webhook deliveries{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>{{ endpoint.name }}</h1><p class="mono">{{ endpoint.url }}</p></div></div>
+<div class="panel">
+  <table><thead><tr><th>Event</th><th>Status</th><th>Code</th><th>Error</th><th>Created</th></tr></thead><tbody>
+    {% for item in deliveries %}<tr><td class="mono">{{ item.event }}</td><td><span class="badge {{ item.status }}">{{ item.status }}</span></td><td>{{ item.response_code|default:"—" }}</td><td>{{ item.error|default:"—" }}</td><td>{{ item.created_at }}</td></tr>{% empty %}<tr><td colspan="5" class="empty">No deliveries recorded.</td></tr>{% endfor %}
+  </tbody></table>
+</div>
+{% endblock %}

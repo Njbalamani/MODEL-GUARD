@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}API — ModelGuard{% endblock %}
+{% block nav_docs %}nav-active{% endblock %}
+{% block page_title %}API reference{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>REST API</h1><p>Token-authenticated endpoints scoped to project access.</p></div></div>
+<div class="grid grid-2">
+  <section class="panel">
+    <div class="panel-header"><h2>Authentication</h2></div>
+    <pre class="mono" style="white-space:pre-wrap;">POST /api/auth/token/
+username=...&amp;password=...
+
+Authorization: Token &lt;token&gt;</pre>
+  </section>
+  <section class="panel">
+    <div class="panel-header"><h2>Upload</h2></div>
+    <pre class="mono" style="white-space:pre-wrap;">POST /api/upload/
+project_id=1
+model_name=demo
+version_label=v1
+file=@synthetic_model.json</pre>
+  </section>
+</div>
+<div class="panel" style="margin-top:20px;">
+  <div class="panel-header"><h2>Resources</h2><a class="table-link" href="{% url 'schema' %}">OpenAPI schema</a></div>
+  <table>
+    <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">/api/me/</td><td>Current user</td></tr>
+      <tr><td class="mono">/api/projects/</td><td>Projects</td></tr>
+      <tr><td class="mono">/api/models/</td><td>Uploaded models</td></tr>
+      <tr><td class="mono">/api/versions/</td><td>Model versions and hashes</td></tr>
+      <tr><td class="mono">/api/assessments/</td><td>Assessments and re-queue action</td></tr>
+      <tr><td class="mono">/api/findings/</td><td>Vulnerability findings</td></tr>
+      <tr><td class="mono">/api/robustness/</td><td>FGSM/PGD results</td></tr>
+      <tr><td class="mono">/api/explainability/</td><td>SHAP or fallback importance</td></tr>
+      <tr><td class="mono">/api/privacy/</td><td>Experimental privacy indicators</td></tr>
+      <tr><td class="mono">/api/reports/</td><td>Generated PDF metadata</td></tr>
+      <tr><td class="mono">/api/audit/</td><td>Audit events</td></tr>
+      <tr><td class="mono">/api/dashboard/summary/</td><td>Aggregate posture</td></tr>
+    </tbody>
+  </table>
+</div>
+{% endblock %}

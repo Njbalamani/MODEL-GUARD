@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ model.name }} — ModelGuard{% endblock %}
+{% block nav_models %}nav-active{% endblock %}
+{% block page_title %}{{ model.name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>{{ model.name }}</h1><p>{{ model.description|default:"No description provided." }}</p></div>
+  <div style="display:flex;gap:10px;">
+    <a class="btn btn-ghost" href="{% url 'models:compare' model.pk %}">Compare versions</a>
+    <a class="btn" href="{% url 'models:upload' %}">New version</a>
+  </div>
+</div>
+<div class="panel">
+  <div class="panel-header"><h2>Versions</h2></div>
+  {% if model.versions.all %}
+  <table>
+    <thead><tr><th>Version</th><th>Format</th><th>Size</th><th>SHA-256</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for version in model.versions.all %}
+        <tr>
+          <td><a class="table-link" href="{% url 'models:version' version.pk %}">{{ version.version_label }}</a></td>
+          <td>{{ version.file_format }}</td>
+          <td>{{ version.size_bytes }} bytes</td>
+          <td class="mono">{{ version.sha256|slice:":16" }}…</td>
+          <td><span class="badge {{ version.status }}">{{ version.status }}</span></td>
+          <td><a class="btn btn-small" href="{% url 'models:assess' version.pk %}">Assess</a></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<div class="empty">No versions uploaded.</div>{% endif %}
+</div>
+{% endblock %}

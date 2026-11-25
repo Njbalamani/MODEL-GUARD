@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Deployment policies — ModelGuard{% endblock %}
+{% block nav_policies %}nav-active{% endblock %}
+{% block page_title %}Deployment policies{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Deployment policies</h1><p>Gates that decide whether an assessment is acceptable for release.</p></div></div>
+<div class="panel">
+  {% if policies %}
+  <table>
+    <thead><tr><th>Policy</th><th>Project</th><th>Max risk</th><th>Blocked severities</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for item in policies %}
+        <tr>
+          <td><a class="table-link" href="{% url 'projects:policy-detail' item.pk %}">{{ item.name }}</a></td>
+          <td>{{ item.project.name }}</td>
+          <td>{{ item.max_risk_score }}</td>
+          <td>{{ item.blocked_severities|join:", " }}</td>
+          <td><span class="badge {{ item.enabled|yesno:'ACTIVE,DISABLED' }}">{{ item.enabled|yesno:'Enabled,Disabled' }}</span></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<div class="empty">No policies yet. Create one from a project page.</div>{% endif %}
+</div>
+{% endblock %}

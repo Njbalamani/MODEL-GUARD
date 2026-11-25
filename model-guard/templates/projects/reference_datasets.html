@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Reference datasets — ModelGuard{% endblock %}
+{% block nav_projects %}nav-active{% endblock %}
+{% block page_title %}Reference datasets{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Reference datasets</h1><p>CSV baselines used for population stability index drift checks.</p></div></div>
+<div class="panel">
+  {% if datasets %}
+  <table>
+    <thead><tr><th>Name</th><th>Project</th><th>Rows</th><th>Columns</th><th>Uploaded</th></tr></thead>
+    <tbody>
+      {% for item in datasets %}<tr><td>{{ item.name }}</td><td>{{ item.project.name }}</td><td>{{ item.rows }}</td><td class="mono">{{ item.feature_names|join:", " }}</td><td>{{ item.created_at|date:"Y-m-d" }}</td></tr>{% endfor %}
+    </tbody>
+  </table>
+  {% else %}<div class="empty">No reference datasets uploaded.</div>{% endif %}
+</div>
+{% endblock %}

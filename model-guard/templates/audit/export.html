@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Audit log — ModelGuard{% endblock %}
+{% block nav_audit %}nav-active{% endblock %}
+{% block page_title %}Audit log{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>Audit log</h1><p>Filter and export platform activity.</p></div>
+  <a class="btn" href="{% url 'audit:export-csv' %}?action={{ request.GET.action|default:'' }}&amp;date_from={{ request.GET.date_from|default:'' }}&amp;date_to={{ request.GET.date_to|default:'' }}">Export CSV</a>
+</div>
+<div class="panel">
+  <form method="get" class="form-grid" style="grid-template-columns:repeat(4,1fr);align-items:end;">
+    <label>Action<input class="form-input" name="action" value="{{ request.GET.action|default:'' }}"></label>
+    <label>From<input class="form-input" type="date" name="date_from" value="{{ request.GET.date_from|default:'' }}"></label>
+    <label>To<input class="form-input" type="date" name="date_to" value="{{ request.GET.date_to|default:'' }}"></label>
+    <button class="btn" type="submit">Filter</button>
+  </form>
+</div>
+<div class="panel" style="margin-top:20px;">
+  <table><thead><tr><th>Time</th><th>User</th><th>Action</th><th>Object</th><th>Detail</th></tr></thead><tbody>
+    {% for item in logs %}<tr><td>{{ item.created_at }}</td><td>{{ item.user.username|default:"System" }}</td><td class="mono">{{ item.action }}</td><td>{{ item.object_type }} #{{ item.object_id|default:"—" }}</td><td class="mono">{{ item.detail|pprint }}</td></tr>{% empty %}<tr><td colspan="5" class="empty">No audit events match the filters.</td></tr>{% endfor %}
+  </tbody></table>
+</div>
+{% endblock %}

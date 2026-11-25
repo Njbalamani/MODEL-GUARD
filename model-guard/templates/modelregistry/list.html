@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Models — ModelGuard{% endblock %}
+{% block nav_models %}nav-active{% endblock %}
+{% block page_title %}Models{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>Model registry</h1><p>Uploaded artifacts, versions and integrity hashes.</p></div>
+  <a class="btn" href="{% url 'models:upload' %}">Upload model</a>
+</div>
+<div class="panel">
+  {% if models %}
+  <table>
+    <thead><tr><th>Model</th><th>Project</th><th>Versions</th><th>SHA-256</th></tr></thead>
+    <tbody>
+      {% for model in models %}
+        <tr>
+          <td><a class="table-link" href="{% url 'models:detail' model.pk %}">{{ model.name }}</a></td>
+          <td>{{ model.project.name }}</td>
+          <td>{{ model.versions.count }}</td>
+          <td class="mono">{{ model.latest_version.sha256|slice:":16"|default:"—" }}…</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<div class="empty">No models uploaded yet.</div>{% endif %}
+</div>
+{% endblock %}

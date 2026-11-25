@@ -1,0 +1,67 @@
+{% load static %}
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ModelGuard — AI-powered machine learning model security and vulnerability assessment platform.">
+  <title>{% block title %}ModelGuard{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  <script src="{% static 'vendor/three.min.js' %}" defer></script>
+  <script src="{% static 'vendor/gsap.min.js' %}" defer></script>
+  <script src="{% static 'vendor/chart.umd.min.js' %}" defer></script>
+  <script src="{% static 'js/app.js' %}" defer></script>
+</head>
+<body>
+  <canvas id="neural-bg" aria-hidden="true"></canvas>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="{% url 'dashboard:home' %}">
+        <span class="brand-mark">MG</span>
+        <span class="brand-text">Model<span>Guard</span></span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="{% url 'dashboard:home' %}" class="{% block nav_dashboard %}{% endblock %}">Overview</a>
+        <a href="{% url 'projects:list' %}" class="{% block nav_projects %}{% endblock %}">Projects</a>
+        <a href="{% url 'models:list' %}" class="{% block nav_models %}{% endblock %}">Models</a>
+        <a href="{% url 'assessments:list' %}" class="{% block nav_assessments %}{% endblock %}">Assessments</a>
+        <a href="{% url 'reports:list' %}" class="{% block nav_reports %}{% endblock %}">Reports</a>
+        <a href="{% url 'assessments:schedules' %}" class="{% block nav_schedules %}{% endblock %}">Schedules</a>
+        <a href="{% url 'projects:policy-list' %}" class="{% block nav_policies %}{% endblock %}">Policies</a>
+        <a href="{% url 'audit:export-page' %}" class="{% block nav_audit %}{% endblock %}">Audit</a>
+        <a href="{% url 'audit:webhook-list' %}" class="{% block nav_webhooks %}{% endblock %}">Webhooks</a>
+        <a href="{% url 'docs:home' %}" class="{% block nav_docs %}{% endblock %}">Documentation</a>
+        <a href="{% url 'schema' %}" class="nav-link-muted">API Schema</a>
+        {% if request.user.is_superuser %}<a href="{% url 'admin:index' %}" class="nav-link-muted">Administration</a>{% endif %}
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-chip">
+          <span class="avatar">{{ request.user.username|slice:":1"|upper }}</span>
+          <span class="user-meta"><strong>{{ request.user.username }}</strong><small>{{ request.user.get_role_display }}</small></span>
+        </div>
+        <form action="{% url 'accounts:logout' %}" method="post">
+          {% csrf_token %}
+          <button class="btn btn-ghost btn-small" type="submit">Sign out</button>
+        </form>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Toggle navigation">☰</button>
+        <div class="topbar-title">{% block page_title %}Security Overview{% endblock %}</div>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle theme">Theme</button>
+      </header>
+
+      <main class="content">
+        {% if messages %}
+          <div class="messages">
+            {% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}
+          </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+</body>
+</html>

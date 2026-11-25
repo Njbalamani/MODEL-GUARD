@@ -1,0 +1,12 @@
+{% extends "auth_base.html" %}
+{% block title %}Sign in — ModelGuard{% endblock %}
+{% block auth_content %}
+<h1>Welcome back</h1>
+<p>Sign in to continue your model security assessments.</p>
+<form method="post" class="form-grid">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button class="btn" type="submit">Sign in</button>
+</form>
+<p style="margin-top:18px;">New here? <a style="color:var(--gold-soft);" href="{% url 'accounts:signup' %}">Create an account</a></p>
+{% endblock %}

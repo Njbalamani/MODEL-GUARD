@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Rescan schedules — ModelGuard{% endblock %}
+{% block nav_schedules %}nav-active{% endblock %}
+{% block page_title %}Rescan schedules{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Rescan schedules</h1><p>Automated reassessments queued through Celery beat or the management command.</p></div></div>
+<div class="panel">
+  {% if schedules %}
+  <table>
+    <thead><tr><th>Model version</th><th>Interval</th><th>Next run</th><th>Enabled</th><th>Actions</th></tr></thead>
+    <tbody>
+      {% for item in schedules %}
+        <tr>
+          <td>{{ item.model_version }}</td>
+          <td>{{ item.interval_minutes }} min</td>
+          <td>{{ item.next_run_at }}</td>
+          <td><span class="badge {{ item.enabled|yesno:'ACTIVE,DISABLED' }}">{{ item.enabled|yesno:'Active,Disabled' }}</span></td>
+          <td><a class="table-link" href="{% url 'assessments:schedule-toggle' item.pk %}">Toggle</a> <a class="table-link" href="{% url 'assessments:schedule-delete' item.pk %}">Delete</a></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<div class="empty">No rescan schedules configured. Open a model version to create one.</div>{% endif %}
+</div>
+{% endblock %}

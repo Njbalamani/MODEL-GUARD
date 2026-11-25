@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}{{ project.name }} — ModelGuard{% endblock %}
+{% block nav_projects %}nav-active{% endblock %}
+{% block page_title %}{{ project.name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>{{ project.name }}</h1><p>{{ project.description|default:"No description provided." }}</p></div>
+  <a class="btn" href="{% url 'models:upload' %}">Upload model</a>
+</div>
+<div class="grid grid-2">
+  <section class="panel">
+    <div class="panel-header"><h2>Models</h2></div>
+    {% if project.models.all %}
+      <table>
+        <thead><tr><th>Model</th><th>Format</th><th>Latest version</th></tr></thead>
+        <tbody>
+          {% for model in project.models.all %}
+            <tr>
+              <td><a class="table-link" href="{% url 'models:detail' model.pk %}">{{ model.name }}</a></td>
+              <td>{{ model.latest_version.file_format|default:"—" }}</td>
+              <td>{{ model.latest_version.version_label|default:"—" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}<div class="empty">No models uploaded to this project.</div>{% endif %}
+  </section>
+  <section class="panel">
+    <div class="panel-header"><h2>Project details</h2></div>
+    <dl class="kv">
+      <dt>Owner</dt><dd>{{ project.owner.username }}</dd>
+      <dt>Created</dt><dd>{{ project.created_at }}</dd>
+      <dt>Updated</dt><dd>{{ project.updated_at }}</dd>
+      <dt>Members</dt><dd>{{ project.members.count }}</dd>
+    </dl>
+  </section>
+</div>
+{% endblock %}

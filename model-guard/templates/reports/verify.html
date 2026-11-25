@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Verify report — ModelGuard{% endblock %}
+{% block nav_reports %}nav-active{% endblock %}
+{% block page_title %}Report signature verification{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Report #{{ report.pk }}</h1><p>HMAC-SHA256 integrity verification.</p></div></div>
+<div class="grid grid-2">
+  <section class="panel">
+    <div class="panel-header"><h2>Status</h2></div>
+    <div class="message {% if verification.valid %}success{% else %}error{% endif %}">{{ verification.reason }}</div>
+    <dl class="kv" style="margin-top:16px;">
+      <dt>Stored SHA-256</dt><dd class="mono">{{ report.sha256 }}</dd>
+      <dt>Computed SHA-256</dt><dd class="mono">{{ verification.digest|default:"—" }}</dd>
+      <dt>Algorithm</dt><dd>{{ report.signature_algorithm }}</dd>
+      <dt>Signed at</dt><dd>{{ report.signed_at|default:"—" }}</dd>
+    </dl>
+  </section>
+  <section class="panel">
+    <div class="panel-header"><h2>Actions</h2></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <a class="btn" href="{% url 'reports:download' report.pk %}">Download PDF</a>
+      <a class="btn btn-ghost" href="{% url 'reports:detail' report.pk %}">Report details</a>
+    </div>
+    <p class="help-text" style="margin-top:16px;">Verification confirms that the stored PDF bytes match the recorded digest and HMAC signature. It does not replace a trusted timestamp or public certificate signature.</p>
+  </section>
+</div>
+{% endblock %}

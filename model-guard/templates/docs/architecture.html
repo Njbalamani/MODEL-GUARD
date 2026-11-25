@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Architecture — ModelGuard{% endblock %}
+{% block nav_docs %}nav-active{% endblock %}
+{% block page_title %}Architecture{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Architecture</h1><p>Layered Django application with isolated analysis services.</p></div></div>
+<div class="panel">
+<pre class="mono" style="white-space:pre-wrap;">
+Browser / API client
+        |
+Django MVT views + DRF viewsets
+        |
+Projects · Model registry · Assessments
+        |
+Analysis services (static · robustness · explainability · privacy)
+        |
+PostgreSQL  ←  Celery worker  ←  Redis
+        |
+Reports (PDF) · Dashboard charts · Three.js graph
+</pre>
+</div>
+<div class="panel" style="margin-top:20px;">
+  <h2>Assessment pipeline</h2>
+  <ol class="help-text">
+    <li>Validate extension, size and magic bytes; compute SHA-256.</li>
+    <li>Store artifact; create ModelVersion and SecurityAssessment.</li>
+    <li>Dispatch Celery task with in-process fallback.</li>
+    <li>Run static byte/archive inspection and create evidence-backed findings.</li>
+    <li>For validated descriptors only, rebuild an allow-listed estimator and run FGSM/PGD, SHAP and privacy indicators on synthetic data.</li>
+    <li>Calculate risk score, persist results and enable PDF export.</li>
+  </ol>
+</div>
+{% endblock %}

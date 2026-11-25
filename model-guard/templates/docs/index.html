@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Documentation — ModelGuard{% endblock %}
+{% block nav_docs %}nav-active{% endblock %}
+{% block page_title %}Documentation{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>ModelGuard documentation</h1><p>Architecture, workflows, database design and API reference.</p></div></div>
+<div class="grid grid-3">
+  <a class="card" href="{% url 'docs:architecture' %}" style="text-decoration:none;color:inherit;"><h2>Architecture</h2><p class="help-text">Service boundaries, scan pipeline and safety controls.</p></a>
+  <a class="card" href="{% url 'docs:er' %}" style="text-decoration:none;color:inherit;"><h2>Database ER</h2><p class="help-text">Entities, relationships and indexes.</p></a>
+  <a class="card" href="{% url 'docs:api' %}" style="text-decoration:none;color:inherit;"><h2>API</h2><p class="help-text">Authentication, endpoints and upload contract.</p></a>
+</div>
+<div class="panel" style="margin-top:20px;">
+  <h2>Safety principle</h2>
+  <p class="help-text">Uploaded model artifacts are treated as hostile data. ModelGuard validates extensions and sizes, computes SHA-256 hashes, inspects bytes and archive entries, and never deserializes or executes uploaded files. Executable demonstrations run only on reconstructed allow-listed scikit-learn models derived from validated descriptors and synthetic data.</p>
+</div>
+{% endblock %}

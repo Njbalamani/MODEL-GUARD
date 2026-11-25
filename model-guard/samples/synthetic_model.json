@@ -1,0 +1,10 @@
+{
+  "schema": "modelguard.descriptor.v1",
+  "model_type": "logistic_regression",
+  "features": ["latency_ms", "packet_size", "error_rate", "request_volume"],
+  "parameters": {
+    "C": 1.0,
+    "max_iter": 300
+  },
+  "seed": 42
+}

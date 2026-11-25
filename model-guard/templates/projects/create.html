@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}New project — ModelGuard{% endblock %}
+{% block nav_projects %}nav-active{% endblock %}
+{% block page_title %}Create project{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Create project</h1><p>A project groups model versions and their security assessments.</p></div></div>
+<div class="panel" style="max-width:720px;">
+  <form method="post" class="form-grid">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn" type="submit">Create project</button>
+  </form>
+</div>
+{% endblock %}

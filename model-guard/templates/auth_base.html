@@ -1,0 +1,25 @@
+{% load static %}
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}ModelGuard{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  <script src="{% static 'vendor/three.min.js' %}" defer></script>
+  <script src="{% static 'vendor/gsap.min.js' %}" defer></script>
+  <script src="{% static 'js/app.js' %}" defer></script>
+</head>
+<body>
+  <canvas id="neural-bg" aria-hidden="true"></canvas>
+  <div class="auth-shell">
+    <section class="card auth-card">
+      <div class="brand" style="margin-bottom:26px;">
+        <span class="brand-mark">MG</span>
+        <span class="brand-text">Model<span>Guard</span></span>
+      </div>
+      {% block auth_content %}{% endblock %}
+    </section>
+  </div>
+</body>
+</html>

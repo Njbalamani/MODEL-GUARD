@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Webhooks — ModelGuard{% endblock %}
+{% block nav_webhooks %}nav-active{% endblock %}
+{% block page_title %}Webhooks{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>Webhook endpoints</h1><p>Signed HTTPS notifications. Private and insecure URLs are rejected.</p></div>
+  <a class="btn" href="{% url 'audit:webhook-create' %}">New endpoint</a>
+</div>
+<div class="panel">
+  {% if endpoints %}
+  <table>
+    <thead><tr><th>Name</th><th>URL</th><th>Events</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>
+      {% for item in endpoints %}
+        <tr>
+          <td>{{ item.name }}</td><td class="mono">{{ item.url }}</td><td>{{ item.events|join:", " }}</td>
+          <td><span class="badge {{ item.active|yesno:'ACTIVE,DISABLED' }}">{{ item.active|yesno:'Active,Disabled' }}</span></td>
+          <td><a class="table-link" href="{% url 'audit:deliveries' item.pk %}">Deliveries</a> <a class="table-link" href="{% url 'audit:webhook-edit' item.pk %}">Edit</a> <a class="table-link" href="{% url 'audit:webhook-delete' item.pk %}">Delete</a></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<div class="empty">No webhook endpoints configured.</div>{% endif %}
+</div>
+<div class="panel" style="margin-top:20px;">
+  <div class="panel-header"><h2>Supported events</h2></div>
+  <div class="help-text mono">{{ events|join:", " }}</div>
+</div>
+{% endblock %}

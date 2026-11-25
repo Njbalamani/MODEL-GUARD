@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Projects — ModelGuard{% endblock %}
+{% block nav_projects %}nav-active{% endblock %}
+{% block page_title %}Projects{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>Projects</h1><p>Organize models and assessments by initiative.</p></div>
+  <a class="btn" href="{% url 'projects:create' %}">New project</a>
+</div>
+<div class="panel">
+  {% if projects %}
+  <table>
+    <thead><tr><th>Project</th><th>Owner</th><th>Created</th><th></th></tr></thead>
+    <tbody>
+      {% for project in projects %}
+      <tr>
+        <td><a class="table-link" href="{% url 'projects:detail' project.pk %}">{{ project.name }}</a><br><span class="help-text">{{ project.description|truncatechars:90 }}</span></td>
+        <td>{{ project.owner.username }}</td>
+        <td>{{ project.created_at|date:"Y-m-d" }}</td>
+        <td><a class="btn btn-small" href="{% url 'projects:detail' project.pk %}">Open</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<div class="empty">No projects yet. Create your first project to upload models.</div>{% endif %}
+</div>
+{% endblock %}

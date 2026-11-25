@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Version {{ version.version_label }} — ModelGuard{% endblock %}
+{% block nav_models %}nav-active{% endblock %}
+{% block page_title %}Model version{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>{{ version.model.name }} · {{ version.version_label }}</h1><p>Integrity and inspection metadata for this artifact.</p></div>
+  <div style="display:flex;gap:10px;">
+    <a class="btn btn-ghost" href="{% url 'assessments:schedule-create' version.pk %}">Schedule rescan</a>
+    <a class="btn" href="{% url 'models:assess' version.pk %}">Run assessment</a>
+  </div>
+</div>
+<div class="grid grid-2">
+  <section class="panel">
+    <div class="panel-header"><h2>Artifact</h2></div>
+    <dl class="kv">
+      <dt>Original name</dt><dd class="mono">{{ version.original_name }}</dd>
+      <dt>Format</dt><dd>{{ version.file_format }}</dd>
+      <dt>Size</dt><dd>{{ version.size_bytes }} bytes</dd>
+      <dt>SHA-256</dt><dd class="mono">{{ version.sha256 }}</dd>
+      <dt>Descriptor</dt><dd>{{ version.is_descriptor|yesno:"Yes,No" }}</dd>
+      <dt>Status</dt><dd><span class="badge {{ version.status }}">{{ version.status }}</span></dd>
+    </dl>
+  </section>
+  <section class="panel">
+    <div class="panel-header"><h2>Inspection metadata</h2></div>
+    <pre class="mono" style="white-space:pre-wrap;">{{ version.metadata|pprint }}</pre>
+  </section>
+</div>
+{% endblock %}

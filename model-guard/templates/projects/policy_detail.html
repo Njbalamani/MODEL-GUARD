@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}{{ policy.name }} — ModelGuard{% endblock %}
+{% block nav_policies %}nav-active{% endblock %}
+{% block page_title %}{{ policy.name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>{{ policy.name }}</h1><p>{{ policy.project.name }} · max risk {{ policy.max_risk_score }} · blocked {{ policy.blocked_severities|join:", " }}</p></div>
+</div>
+<div class="grid grid-2">
+  <section class="panel">
+    <div class="panel-header"><h2>Evaluate an assessment</h2></div>
+    {% if assessments %}
+      <form method="post" action="{% url 'projects:policy-evaluate' policy.pk %}" class="form-grid">
+        {% csrf_token %}
+        <label>Completed assessment<select class="form-select" name="assessment_id">{% for item in assessments %}<option value="{{ item.pk }}">#{{ item.pk }} · {{ item.model_version }} · risk {{ item.risk_score }}</option>{% endfor %}</select></label>
+        <button class="btn" type="submit">Evaluate</button>
+      </form>
+    {% else %}<div class="empty">No completed assessments in this project.</div>{% endif %}
+  </section>
+  <section class="panel">
+    <div class="panel-header"><h2>Recent evaluations</h2></div>
+    <table><thead><tr><th>Assessment</th><th>Result</th><th>Reasons</th></tr></thead><tbody>
+      {% for item in evaluations %}<tr><td><a class="table-link" href="{% url 'assessments:detail' item.assessment_id %}">#{{ item.assessment_id }}</a></td><td><span class="badge {{ item.result }}">{{ item.result }}</span></td><td>{{ item.reasons|join:" " }}</td></tr>{% empty %}<tr><td colspan="3" class="empty">No evaluations yet.</td></tr>{% endfor %}
+    </tbody></table>
+  </section>
+</div>
+{% endblock %}

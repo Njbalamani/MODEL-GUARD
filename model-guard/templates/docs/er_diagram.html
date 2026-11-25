@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Database ER — ModelGuard{% endblock %}
+{% block nav_docs %}nav-active{% endblock %}
+{% block page_title %}Database ER{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Database entity relationships</h1><p>Core entities and their relationships.</p></div></div>
+<div class="panel">
+<pre class="mono" style="white-space:pre-wrap;">
+User ──&lt; Project ──&lt; UploadedModel ──&lt; ModelVersion
+  │          │                              │
+  │          └──&lt; SecurityAssessment ───────┘
+  │                         │
+  │                         ├──&lt; VulnerabilityFinding
+  │                         ├──&lt; RobustnessTest
+  │                         ├─── ExplainabilityResult
+  │                         ├─── PrivacyAssessment
+  │                         └──&lt; GeneratedReport
+  └──&lt; AuditLog
+</pre>
+</div>
+<div class="panel" style="margin-top:20px;">
+  <h2>Key constraints</h2>
+  <ul class="help-text">
+    <li>Unique project name per owner.</li>
+    <li>Unique version label per model.</li>
+    <li>Unique assessment/attack pair for robustness tests.</li>
+    <li>Indexes on status, severity, project, model and timestamp fields.</li>
+  </ul>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Assessments — ModelGuard{% endblock %}
+{% block nav_assessments %}nav-active{% endblock %}
+{% block page_title %}Assessments{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Security assessments</h1><p>Every assessment records evidence, methodology and limitations.</p></div></div>
+<div class="panel">
+  {% if assessments %}
+  <table>
+    <thead><tr><th>ID</th><th>Model</th><th>Project</th><th>Risk</th><th>Status</th><th>Created</th></tr></thead>
+    <tbody>
+      {% for item in assessments %}
+        <tr>
+          <td><a class="table-link" href="{% url 'assessments:detail' item.pk %}">#{{ item.pk }}</a></td>
+          <td>{{ item.model_version }}</td>
+          <td>{{ item.project.name }}</td>
+          <td>{{ item.risk_score }}</td>
+          <td><span class="badge {{ item.status }}">{{ item.status }}</span></td>
+          <td>{{ item.created_at|date:"Y-m-d H:i" }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<div class="empty">No assessments yet.</div>{% endif %}
+</div>
+{% endblock %}

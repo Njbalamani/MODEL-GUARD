@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}New rescan schedule — ModelGuard{% endblock %}
+{% block nav_schedules %}nav-active{% endblock %}
+{% block page_title %}New rescan schedule{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Schedule rescan</h1><p>{{ version }}</p></div></div>
+<div class="panel" style="max-width:720px;">
+  <form method="post" class="form-grid">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn" type="submit">Create schedule</button>
+  </form>
+</div>
+{% endblock %}

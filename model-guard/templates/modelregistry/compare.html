@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Compare versions — ModelGuard{% endblock %}
+{% block nav_models %}nav-active{% endblock %}
+{% block page_title %}Compare versions{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>{{ model.name }} version comparison</h1><p>Compare completed assessments across two versions.</p></div></div>
+<div class="panel">
+  <form method="get" class="form-grid" style="grid-template-columns:repeat(3,1fr);align-items:end;">
+    <label>Previous version<select class="form-select" name="previous"><option value="">Select</option>{% for version in versions %}<option value="{{ version.pk }}" {% if version.pk|stringformat:'s' == previous_id %}selected{% endif %}>{{ version.version_label }}</option>{% endfor %}</select></label>
+    <label>Current version<select class="form-select" name="current"><option value="">Select</option>{% for version in versions %}<option value="{{ version.pk }}" {% if version.pk|stringformat:'s' == current_id %}selected{% endif %}>{{ version.version_label }}</option>{% endfor %}</select></label>
+    <button class="btn" type="submit">Compare</button>
+  </form>
+  {% if error %}<div class="message error" style="margin-top:16px;">{{ error }}</div>{% endif %}
+</div>
+{% if comparison %}
+<div class="grid grid-3" style="margin-top:20px;">
+  <article class="card stat gold"><span class="stat-label">Risk delta</span><span class="stat-value">{{ comparison.risk_delta }}</span></article>
+  <article class="card stat danger"><span class="stat-label">Added findings</span><span class="stat-value">{{ comparison.added|length }}</span></article>
+  <article class="card stat success"><span class="stat-label">Removed findings</span><span class="stat-value">{{ comparison.removed|length }}</span></article>
+</div>
+<div class="grid grid-2" style="margin-top:20px;">
+  <section class="panel">
+    <div class="panel-header"><h2>Finding changes</h2></div>
+    <div class="section-title">Added</div>
+    {% for item in comparison.added %}<div class="limitation">• <span class="badge {{ item.severity }}">{{ item.severity }}</span> {{ item.title }}</div>{% empty %}<div class="empty">None</div>{% endfor %}
+    <div class="section-title">Removed</div>
+    {% for item in comparison.removed %}<div class="limitation">• <span class="badge {{ item.severity }}">{{ item.severity }}</span> {{ item.title }}</div>{% empty %}<div class="empty">None</div>{% endfor %}
+  </section>
+  <section class="panel">
+    <div class="panel-header"><h2>Robustness deltas</h2></div>
+    <table><thead><tr><th>Attack</th><th>Previous drop</th><th>Current drop</th><th>Delta</th></tr></thead><tbody>
+      {% for item in comparison.robustness %}<tr><td>{{ item.attack }}</td><td>{{ item.previous_drop|default:"—" }}</td><td>{{ item.current_drop|default:"—" }}</td><td>{{ item.delta|default:"—" }}</td></tr>{% empty %}<tr><td colspan="4" class="empty">No robustness data</td></tr>{% endfor %}
+    </tbody></table>
+  </section>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block title %}Assessment #{{ assessment.pk }} — ModelGuard{% endblock %}
+{% block nav_assessments %}nav-active{% endblock %}
+{% block page_title %}Assessment #{{ assessment.pk }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Assessment #{{ assessment.pk }}</h1>
+    <p>{{ assessment.model_version }} · SHA-256 <span class="mono">{{ assessment.model_version.sha256|slice:":20" }}…</span></p>
+  </div>
+  <div style="display:flex;gap:10px;">
+    <a class="btn btn-ghost" href="{% url 'assessments:requeue' assessment.pk %}">Re-run</a>
+    <a class="btn" href="{% url 'reports:generate' assessment.pk %}">Generate PDF</a>
+  </div>
+</div>
+
+<div class="grid grid-4">
+  <article class="card stat gold"><span class="stat-label">Risk score</span><span class="stat-value">{{ assessment.risk_score }}</span></article>
+  <article class="card stat danger"><span class="stat-label">Recorded findings</span><span class="stat-value">{{ assessment.findings.count }}</span></article>
+  <article class="card stat"><span class="stat-label">Status</span><span class="stat-value" style="font-size:20px;"><span class="badge {{ assessment.status }}">{{ assessment.status }}</span></span></article>
+  <article class="card stat success"><span class="stat-label">Completed</span><span class="stat-value" style="font-size:16px;">{{ assessment.completed_at|default:"—" }}</span></article>
+</div>
+
+{% if assessment.error %}<div class="message error" style="margin-top:20px;">{{ assessment.error }}</div>{% endif %}
+
+<div class="grid grid-2" style="margin-top:20px;">
+  <section class="panel">
+    <div class="panel-header"><h2>Findings</h2></div>
+    {% if assessment.findings.all %}
+      <table>
+        <thead><tr><th>Severity</th><th>Finding</th><th>Source</th><th>Actions</th></tr></thead>
+        <tbody>
+          {% for item in assessment.findings.all %}
+            <tr>
+              <td><span class="badge {{ item.severity }}">{{ item.severity }}</span></td>
+              <td><strong>{{ item.title }}</strong><br><span class="help-text">{{ item.description }}</span><br><span class="help-text mono">{{ item.evidence|pprint }}</span></td>
+              <td>{{ item.source }}</td>
+              <td>
+                <a class="table-link" href="{% url 'assessments:suppress' item.pk %}">Suppress</a>
+                {% for suppression in item.suppressions.all %}
+                  {% if suppression.status == 'PENDING' and can_administer %}
+                    <a class="table-link" href="{% url 'assessments:approve-suppression' suppression.pk %}">Approve</a>
+                  {% elif suppression.status == 'ACTIVE' and can_administer %}
+                    <a class="table-link" href="{% url 'assessments:revoke-suppression' suppression.pk %}">Revoke</a>
+                  {% else %}
+                    <span class="badge {{ suppression.status }}">{{ suppression.status }}</span>
+                  {% endif %}
+                {% endfor %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}<div class="empty">No findings recorded. This does not certify the model as secure.</div>{% endif %}
+  </section>
+
+  <section class="panel">
+    <div class="panel-header"><h2>Adversarial robustness</h2></div>
+    <table>
+      <thead><tr><th>Attack</th><th>Status</th><th>Accuracy</th><th>Drop</th></tr></thead>
+      <tbody>
+        {% for test in assessment.robustness_tests.all %}
+          <tr>
+            <td>{{ test.attack }}</td>
+            <td><span class="badge {{ test.status }}">{{ test.status }}</span></td>
+            <td>{{ test.original_accuracy|default:"—" }} → {{ test.perturbed_accuracy|default:"—" }}</td>
+            <td>{{ test.accuracy_drop|default:"—" }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="4" class="empty">No robustness tests recorded.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="section-title">Limitations</div>
+    {% for test in assessment.robustness_tests.all %}
+      {% for item in test.limitations %}<div class="limitation">• {{ item }}</div>{% endfor %}
+    {% endfor %}
+  </section>
+</div>
+
+<div class="grid grid-2" style="margin-top:20px;">
+  <section class="panel">
+    <div class="panel-header"><h2>Explainability</h2>{% if assessment.explainability %}<span class="badge {{ assessment.explainability.status }}">{{ assessment.explainability.method }}</span>{% endif %}</div>
+    {% if assessment.explainability %}
+      {% if assessment.explainability.plot_image %}<img class="viz-panel" style="width:100%;border-radius:12px;" src="{{ assessment.explainability.plot_image.url }}" alt="Feature importance chart">{% endif %}
+      {% for item in assessment.explainability.feature_importances %}
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:12px;"><span>{{ item.feature }}</span><span class="mono">{{ item.value }}</span></div>
+          <div class="progress"><span style="width:{{ item.value|floatformat:3 }}%"></span></div>
+        </div>
+      {% empty %}
+        <div class="empty">No feature attribution available.</div>
+      {% endfor %}
+    {% else %}<div class="empty">No explainability result recorded.</div>{% endif %}
+  </section>
+
+  <section class="panel">
+    <div class="panel-header"><h2>Privacy indicator</h2>{% if assessment.privacy %}<span class="badge {{ assessment.privacy.status }}">{{ assessment.privacy.status }}</span>{% endif %}</div>
+    {% if assessment.privacy %}
+      <dl class="kv">
+        <dt>Method</dt><dd>{{ assessment.privacy.method }}</dd>
+        <dt>Train confidence</dt><dd>{{ assessment.privacy.train_confidence|default:"—" }}</dd>
+        <dt>Holdout confidence</dt><dd>{{ assessment.privacy.holdout_confidence|default:"—" }}</dd>
+        <dt>Confidence gap</dt><dd>{{ assessment.privacy.confidence_gap|default:"—" }}</dd>
+        <dt>Experimental indicator</dt><dd>{{ assessment.privacy.indicator|yesno:"Yes,No" }}</dd>
+      </dl>
+      <div class="section-title">Limitations</div>
+      {% for item in assessment.privacy.limitations %}<div class="limitation">• {{ item }}</div>{% endfor %}
+    {% else %}<div class="empty">No privacy assessment recorded.</div>{% endif %}
+  </section>
+</div>
+
+<div class="grid grid-2" style="margin-top:20px;">
+  <section class="panel">
+    <div class="panel-header"><h2>Data drift</h2></div>
+    <table>
+      <thead><tr><th>Feature</th><th>PSI</th><th>Status</th><th>Reference</th></tr></thead>
+      <tbody>
+        {% for item in assessment.drift_results.all %}
+          <tr><td>{{ item.feature }}</td><td class="mono">{{ item.psi }}</td><td><span class="badge {{ item.status }}">{{ item.status }}</span></td><td>{{ item.reference_source }}</td></tr>
+        {% empty %}
+          <tr><td colspan="4" class="empty">No drift results recorded.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header"><h2>Deployment policies</h2></div>
+    <table>
+      <thead><tr><th>Policy</th><th>Result</th><th>Reasons</th></tr></thead>
+      <tbody>
+        {% for item in assessment.policy_evaluations.all %}
+          <tr><td><a class="table-link" href="{% url 'projects:policy-detail' item.policy_id %}">{{ item.policy.name }}</a></td><td><span class="badge {{ item.result }}">{{ item.result }}</span></td><td>{{ item.reasons|join:" " }}</td></tr>
+        {% empty %}
+          <tr><td colspan="3" class="empty">No policy evaluations recorded.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+</div>
+
+<div class="grid grid-2" style="margin-top:20px;">
+  <section class="panel">
+    <div class="panel-header"><h2>Comments</h2></div>
+    {% for comment in assessment.comments.all %}
+      <div class="timeline-item"><span class="timeline-dot"></span><div><strong>{{ comment.user.username }}</strong><small>{{ comment.created_at }}</small><p>{{ comment.body }}</p></div></div>
+    {% empty %}
+      <div class="empty">No comments yet.</div>
+    {% endfor %}
+    <form method="post" action="{% url 'assessments:comment' assessment.pk %}" class="form-grid" style="margin-top:16px;">
+      {% csrf_token %}
+      {{ comment_form.as_p }}
+      <button class="btn btn-small" type="submit">Add comment</button>
+    </form>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header"><h2>Reports</h2></div>
+    {% for report in assessment.reports.all %}
+      <div class="timeline-item"><span class="timeline-dot"></span><div><a class="table-link" href="{% url 'reports:download' report.pk %}">Download PDF #{{ report.pk }}</a><br><a class="table-link" href="{% url 'reports:verify' report.pk %}">Verify signature</a><small>{{ report.created_at }} · SHA-256 {{ report.sha256|slice:":20" }}… · {{ report.signature_algorithm }}</small></div></div>
+    {% endfor %}
+  </section>
+</div>
+{% endblock %}

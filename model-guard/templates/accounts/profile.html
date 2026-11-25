@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Profile — ModelGuard{% endblock %}
+{% block page_title %}Account profile{% endblock %}
+{% block content %}
+<div class="panel">
+  <div class="panel-header"><h2>{{ request.user.username }}</h2></div>
+  <dl class="kv">
+    <dt>Email</dt><dd>{{ request.user.email|default:"Not set" }}</dd>
+    <dt>Role</dt><dd>{{ request.user.get_role_display }}</dd>
+    <dt>Organization</dt><dd>{{ request.user.organization|default:"Not set" }}</dd>
+    <dt>Joined</dt><dd>{{ request.user.created_at }}</dd>
+  </dl>
+</div>
+{% endblock %}

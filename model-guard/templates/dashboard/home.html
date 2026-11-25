@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Overview — ModelGuard{% endblock %}
+{% block nav_dashboard %}nav-active{% endblock %}
+{% block page_title %}Security overview{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Model security posture</h1>
+    <p>Continuous visibility into model risk, robustness and explainability.</p>
+  </div>
+  <a class="btn" href="{% url 'models:upload' %}">Upload model</a>
+</div>
+
+<div class="grid grid-4">
+  <article class="card stat gold"><span class="stat-label">Models analyzed</span><span class="stat-value">{{ models }}</span><span class="stat-note">{{ projects }} active projects</span></article>
+  <article class="card stat success"><span class="stat-label">Assessments</span><span class="stat-value">{{ total_assessments }}</span><span class="stat-note">{{ completed }} completed</span></article>
+  <article class="card stat danger"><span class="stat-label">Critical findings</span><span class="stat-value">{{ critical }}</span><span class="stat-note">Requires immediate review</span></article>
+  <article class="card stat"><span class="stat-label">High findings</span><span class="stat-value">{{ high }}</span><span class="stat-note">Evidence-backed detections</span></article>
+</div>
+
+<div class="grid grid-2" style="margin-top:20px;">
+  <section class="panel viz-panel">
+    <div class="panel-header"><h2>Model intelligence graph</h2><span class="badge INFO">Live</span></div>
+    <canvas id="neural-viz" data-features='{{ feature_json|escape }}'></canvas>
+    <div class="viz-caption">Nodes represent reconstructed feature importance from the latest explained model.</div>
+  </section>
+  <section class="panel">
+    <div class="panel-header"><h2>Finding severity</h2></div>
+    <div class="chart-wrap"><canvas id="severity-chart"></canvas></div>
+  </section>
+</div>
+
+<div class="grid grid-2" style="margin-top:20px;">
+  <section class="panel">
+    <div class="panel-header"><h2>Risk score timeline</h2></div>
+    <div class="chart-wrap"><canvas id="risk-chart"></canvas></div>
+  </section>
+  <section class="panel">
+    <div class="panel-header"><h2>Recent activity</h2><a href="{% url 'assessments:list' %}" class="table-link">View all</a></div>
+    <div class="timeline">
+      {% for item in assessments %}
+        <div class="timeline-item">
+          <span class="timeline-dot"></span>
+          <div><a class="table-link" href="{% url 'assessments:detail' item.pk %}">{{ item.model_version }}</a><small>{{ item.created_at }} · <span class="badge {{ item.status }}">{{ item.status }}</span></small></div>
+        </div>
+      {% empty %}
+        <div class="empty">No assessments yet. Upload a validated descriptor to begin.</div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

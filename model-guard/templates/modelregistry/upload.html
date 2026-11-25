@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Upload model — ModelGuard{% endblock %}
+{% block nav_models %}nav-active{% endblock %}
+{% block page_title %}Upload model{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Upload model</h1><p>Uploaded files are inspected as bytes only and are never deserialized or executed.</p></div></div>
+<div class="grid grid-2">
+  <section class="panel">
+    <form method="post" enctype="multipart/form-data" class="form-grid">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button class="btn" type="submit">Upload and assess</button>
+    </form>
+  </section>
+  <section class="panel">
+    <div class="panel-header"><h2>Accepted formats</h2></div>
+    <dl class="kv">
+      <dt>Executable analysis</dt><dd>Validated <span class="mono">modelguard.descriptor.v1</span> JSON descriptors</dd>
+      <dt>Static inspection only</dt><dd>ONNX, PyTorch (.pt/.pth), pickle, joblib, safetensors, NPY/NPZ, Keras/H5</dd>
+      <dt>Rejected</dt><dd>Executables, scripts, notebooks and unknown extensions</dd>
+      <dt>Size limit</dt><dd>200 MB per upload (configurable)</dd>
+    </dl>
+    <div class="section-title">Safe descriptor example</div>
+    <div class="help-text">Use the sample in <span class="mono">samples/synthetic_model.json</span>. Only allow-listed scikit-learn constructors are rebuilt from descriptors.</div>
+  </section>
+</div>
+{% endblock %}

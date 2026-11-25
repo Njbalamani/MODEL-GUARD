@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Upload reference — ModelGuard{% endblock %}
+{% block nav_projects %}nav-active{% endblock %}
+{% block page_title %}Upload reference dataset{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Upload reference dataset</h1><p>Project: {{ project.name }}</p></div></div>
+<div class="panel" style="max-width:720px;">
+  <form method="post" enctype="multipart/form-data" class="form-grid">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn" type="submit">Upload CSV</button>
+  </form>
+</div>
+{% endblock %}

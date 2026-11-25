@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}New policy — ModelGuard{% endblock %}
+{% block nav_policies %}nav-active{% endblock %}
+{% block page_title %}New deployment policy{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Create deployment policy</h1><p>Project: {{ project.name }}</p></div></div>
+<div class="panel" style="max-width:760px;">
+  <form method="post" class="form-grid">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn" type="submit">Create policy</button>
+  </form>
+</div>
+{% endblock %}
